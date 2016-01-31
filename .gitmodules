@@ -1,3 +1,9 @@
 [submodule "InstrumentationCode"]
 	path = InstrumentationCode
 	url = https://github.com/secure-software-engineering/DroidForce.git
+[submodule "InstrumentationServer"]
+	path = InstrumentationServer
+	url = https://github.com/mlin2/InstrumentationServer.git
+[submodule "SentinelApp"]
+	path = SentinelApp
+	url = https://github.com/lolobosse/DroidForce
