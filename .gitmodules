@@ -6,4 +6,4 @@
 	url = https://github.com/mlin2/InstrumentationServer.git
 [submodule "SentinelApp"]
 	path = SentinelApp
-	url = https://github.com/lolobosse/DroidForce
+	url = https://github.com/lolobosse/Sentinel.git
