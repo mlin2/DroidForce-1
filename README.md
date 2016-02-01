@@ -1,4 +1,4 @@
-#Droid Force Project TUM Praktikum WS 2015-2016
+#Securing Android Project TUM Praktikum WS 2015-2016
 
 
 Following is the technical report about the project. It may be a bit too much information if you just want to use the app but if you want to take a closer look at the structure of the project, it may be useful.
@@ -43,7 +43,7 @@ A good consequence of this is that DroidForce doesn't require the root privilege
 
 ### But how can the apps be secured?
 
-Every app uses methods to receive data from the system. We name these methods `Sources`, and excluding the native ones (see the Limitations part), we can track and detected when they're called.
+Every app uses methods to receive data from the system. We name these methods `Sources`, and excluding the native ones (see the [Limitations](https://github.com/lolobosse/Sentinel/wiki/Technical-Report#droidforce-limitations-before-our-project) part), we can track and detect when they're called.
 An app also uses some methods to send data to some external services (typically SMS or Server). We name these methods `Sinks` and excluding the native ones, we know the name of them and can detect where they're called in the app.
 
 **So what about analysing the apps by passing them in a script which will mark where these sources and sinks are?**
@@ -52,7 +52,7 @@ That's what the InstrumentationPEP project was designed for! It basically takes 
 
 ### What? A boolean check?
 
-Yes! To be able to see which app is leaking your data and send viruses to its creator is already a really good thing, **what about avoiding these data to be sent in the first place?** Wouldn't that be better? And that's the whole point of the `DroidForce` project: we add the boolean check which will basically call a Decision Point at runtime which will then return a boolean based on a user-defined policy.
+Yes! To be able to see which app is leaking your data and send viruses to its creator is already a really good thing, **what about avoiding these data to be sent?** Wouldn't that be better? And that's the whole point of the `DroidForce` project: we add the boolean check which will basically call a Decision Point at runtime which will then return a boolean based on a user-defined policy.
 
 ### Wait, wait policies that I need to define? Decision Point? What are you talking about?
 
@@ -124,7 +124,7 @@ We tried to tackle some of the issues of DroidForce with a main focus on the use
 Enrico Lovat, our supervisor, gave us some leads to improve the quality of `DroidForce` and from among these ideas we chose to do the following:
 
 Our initial objective of the project was: "**We want to create a big central app which could:**"
- * Act as a « Instrumented App Store »
+ * Act as a « Instrumented App Store »
  * Send existing apks to server for instrumentation.
  * Maintain a record of which apps are instrumented.
  * Allow the user to write policies and to send these to the server which will return an instrumented app based on these.
@@ -153,7 +153,7 @@ A good overview of the basic structure is illustrated with this scheme:
 
 ![Server workflow](http://i.imgur.com/GcKDHZ3.png)
 
-*Note that this does not cover the workflow of the whole application
+*Note that this does not cover the workflow of the whole application*
 
 #App Sentinel
 
@@ -164,13 +164,11 @@ The app is running from Android versions 4.0 to 4.4. We could probably have incl
 
 The workflow we had for the app was **"we build quick, we improve later"**, so if you look at the commit differences, you should see that they're pretty big and that the project has been rebuilt many times. It's partly due to the fact that the team has been constantly reducing, we were 6 at the beginning which means that we did the whole work with 3 people!
 
-So, basically, the first commits were setting the libs/model classes which we used to structured the app and build the UI with, and then we worked on connecting the app with the server and documenting/refractoring the code properly.
-
 ## Code quality and tests
 
-However, along the project we really tried to increase the code quality of the project and we introduced some unit tests, some component testing, and test coverage. We wrote a lot of Javadoc and have an explicit header for almost every method.
+However, along the project we really tried to increase the code quality of the project and we introduced some unit tests, some component testing, and tried to have a decent test coverage. We wrote a lot of Javadoc and have an explicit header for almost every method.
 
-To run the tests, use an **emulator** which respects the requirements of the app (some permission issues could happen on some real devices) and use the `./gradlew connectedCheck`. You can access the coverage at `sentinel/build/reports/coverage/debug/index.html` once the tests successfully pass. The coverage could be better but it is sufficient to ensure that the minimum viable features are working: we have the critical buttons displayed at the right moment and we retrieve all apps from the system in order to instrument them. Some other interesting detail: Laurent wrote the unit test and Pontus the Component tests (with the great [Espresso lib](http://google.github.io/android-testing-support-library/docs/espresso/index.html)).
+To run the tests, use an **emulator** which respects the requirements of the app (some permission issues could happen on some real devices and **DO NOT USE A GOOGLE EMULATOR**) and use the `./gradlew connectedCheck`. You can access the coverage at `sentinel/build/reports/coverage/debug/index.html` once the tests successfully pass. The coverage could be better but it is sufficient to ensure that the minimum viable features are working: we have the critical buttons displayed at the right moment and we retrieve all apps from the system in order to instrument them. Some other interesting detail: Laurent wrote the unit test and Pontus the Component tests (with the great [Espresso lib](http://google.github.io/android-testing-support-library/docs/espresso/index.html)).
 
 ## Policy Editor
 This part was supposed to be the easiest of the whole project but it was, by far, the most complicated one: Laurent was responsible for that and made 75% of his changes on this topic.
@@ -194,7 +192,7 @@ A limitation of Jibx: it fails to retain important information like TimeZone in 
 
 Actually this wasn't needed at all because the existing `app-PDPj-lib` is also doing a parsing with a repackaged version of JAXB (so we could have use it), the only problem for the team was we weren't sure if we will be kicking this `appPDPj-lib` from the project because none of us is very keen on its coding style. 
 
-So we found ourselves in a passiv state with that kind of screenshot
+So we found ourselves stuck with that kind of screenshot and wasn't really possible to go further.
 
 ![PolicyEditor](http://i.imgur.com/yBHVdoN.png)
 
@@ -225,12 +223,14 @@ Currently looking like this:
 
 For fun and for having a better design! (ok you may find that your file explorer is better than the one we did but the fun is still there!).
 
-Pontus wanted created these classes from A to Z only with a small code review at the end and they work perfectly and are almost fully tested (some error branches are missing though). We use them all over the app so that's why we decided to have our own: it is smoother and faster than having external intents.
+Pontus wanted created these classes from A to Z only with a small code review from Laurent at the end and they work perfectly and are almost fully tested (some error branches are missing though). We use them all over the app so that's why we decided to have our own: it is smoother and faster than having external intents (and of course more reliable).
 
 ![FileExplorer](http://i.imgur.com/Sc12ftB.png)
 
 
-Codewise, it's very simple; It starts of by getting the path to the external sdcard and saving that into a `String` value. Out of this string we make a new `File`, and pass it to a method  called "fill" which takes one `File` argument. In this method we list all the files in the filepath that has been given, and stores then in a `Array`. Each file is then displayed via a custom `ListAdapter` with a filename, last modified date, size in kB, and a lightweight icon (directory name, last modified date, number of containing files, and icon) if the file is a directory. Each file responds to an `OnListItemClick` listener, which depending on filetype, either opens the new directory of files (if folder) by using it with the method previously mentioned, returns its absolute path to parent activity (if appropriate file extension), or make a toast about which file extension that should be selected (file with wrong extension)
+Codewise, it's very simple; It starts of by getting the path to the external sdcard and saving that into a `String` value. Out of this string we make a new `File`, and pass it to a method  called "fill" which takes one `File` argument. In this method we list all the files in the filepath that has been given, and store them in a `Array`.
+
+Each file is then displayed via a custom `ListAdapter` with a filename, last modified date, size in kB, and a lightweight icon (directory name, last modified date, number of containing files, and icon). Each file responds to an `OnListItemClick` listener, which depending on filetype, either opens the new directory of files (if folder) by using it with the method previously mentioned, returns its absolute path to parent activity (if appropriate file extension), or make a toast about which file extension that should be selected (file with wrong extension has been selected)
 
 ### Limitations of the file explorer:
  * Some design errors like: [this funny one](https://github.com/lolobosse/DroidForce/blob/policyUI/sentinel/src/main/java/de/tum/in/i22/sentinel/android/app/file_explorer/MenuObj.java#L50)
@@ -318,11 +318,11 @@ public class UploadTest extends AndroidTestCase {
 
 We wanted to put that in the report because we found that this mix of old school computer science and modern mobile development was pretty funny!
 
-## Getting the APK on the device
-Getting the APK on the device is something relatively easy because the Android Package Manager delivers the informations we need. However, we do not have any possibility to get the path from that tool. To do so we need to call the internal package manager and our solution is an asynchronous implementation of [this SO Solution](http://stackoverflow.com/a/11013175/2545832).
+## Getting the APK of the device
+Getting the APK on the device is something relatively easy because the Android Package Manager delivers the informations we need. However, we do not have any possibility to get the path from that tool. To do so we need to call the internal package manager and our solution is an asynchronous implementation of [this SO Solution](http://stackoverflow.com/a/11013175/2545832). This class could have been moved to an standalone open source project, it may be done in the future.
 
 ## Limitations of the app:
- * The app has some useless views like the `ToServerFragment` which doesn't bring a lot to user
+ * The app has some useless views like the `ToServerFragment` which doesn't bring a lot to the user
  * Using two networking stacks in the app is a good choice in this context (short timeframe and two very different usages) but **it is absolutely not a good practice**: it can lead to an overconsumption of power due to a bad synchronisation of the call to the network chip. Moreover it increase the size of the RAM used because each lib has its own cache.
  * The process to get the installed APKs could have been an independent open source project included as a submodule; it would have been a better design. We'll try to put this part in a library to "help" the community (Objective: be published on Android Arsenal! :smile: ).
  * Copy the policies from the `res` to the filesystem at the start of the `MainActivity` is not very clever.
@@ -519,7 +519,7 @@ The database used for the project is [SQLite](https://www.sqlite.org/whentouse.h
 
 Note: The hashes used in the implementation of the server always correspond to the uninstrumented versions of APKs because we try to receive data from already having an APK that is not yet instrumented.
 
-### Why is that cool?
+### Why is all of that cool?
  * If we change the RAML, the endpoints and model classes can be generated again. Therefore much less implementation is required for changing the REST API.
  * It integrates well with Maven
  * It's just clean software engineering.
@@ -539,6 +539,8 @@ Install SQLite https://www.sqlite.org/download.html
 Install zipalign http://developer.android.com/tools/help/zipalign.html
 
 Get an android jar http://developer.android.com/sdk/index.html
+
+Generate a [keystore](https://www.digitalocean.com/community/tutorials/java-keytool-essentials-working-with-java-keystores) for signing of APKs and if you want to offer HTTPS support for the certificates as well.
 
 You already should have it if you are running linux but in case you don't, you also need the timeout program that can be found in gnu coreutils.
 
@@ -562,7 +564,18 @@ The instrumentation server needs a file named config.ini in the project root fol
 ```ini
 [URL]
 # The URL the server will run on
-ServerUrl: http://your.domain.org
+ServerUrl: https://your.domain.org
+
+
+[Security]
+# Whether or not to enable HTTPS on the server.
+enableHTTPS: true
+
+# The absolute path to the app signing keystore
+keyStorePathSecurity: your/path/SecurityKeystore
+
+# The password of the security keystore
+storePassSecurity: security_password
 
 
 [Port]
@@ -584,6 +597,7 @@ DeleteDataDirectory: true
 [Android Jar]
 # Path to android Jar
 androidJarPath: your/path/android-sdk-linux/platforms/android-19/android.jar
+
 
 [Keystore]
 # The absolute path to the keystore
@@ -610,11 +624,11 @@ TimeoutForApkFetchingInMinutes: 1
 ```
 An example .ini file is included in the project root.
 
-The tests for the server additionally need a config file at src/test/java/org/sentinel/instrumentationserver. Agai, an example file is given at this location:
+The tests for the server additionally need a config file at src/test/java/org/sentinel/instrumentationserver. You can, however, just adapt your normal config file to be similar to this example: 
 
 ```ini
 [URL]
-# The URL the server will run on
+# The URL the server will run on.
 ServerUrl: http://localhost
 
 
@@ -624,6 +638,18 @@ ServerPort: 8080
 
 # In case the port to the server is forwarded, specify the forwarded port
 ForwardedPort: 8080
+
+
+[Security]
+# Whether or not to enable HTTPS on the server.
+# Needs to be turned off for the tests.
+enableHTTPS: false
+
+# The absolute path to the app signing keystore
+keyStorePathSecurity: your/path/SecurityKeystore
+
+# The password of the security keystore
+storePassSecurity: security_password
 
 
 [Directories]
@@ -728,11 +754,12 @@ fi
 ```
 
 ### Where is this server deployed?
-As discussed with Enrico, the server is deployed on the server he gave us on port 443: [http://lapbroyg58.informatik.tu-muenchen.de:443](http://lapbroyg58.informatik.tu-muenchen.de:443).
+As discussed with Enrico, the server is deployed on the server he gave us on port 443: [https://lapbroyg58.informatik.tu-muenchen.de:443](https://lapbroyg58.informatik.tu-muenchen.de:443).
 
 ### What are the other features of the server?
 
-As you can see on the [RAML](http://raml.org/), there are other endpoints than the instrumentation of apps. We've to admit that the biggest and most interesting feature is the instrumentation but we also have *nice-to-have* features like:
+As you can see on the [RAML](http://raml.org/), there are other endpoints than the instrumentation of apps. We have to admit that the biggest and most interesting feature is the instrumentation but we also have *nice-to-have* features like:
+ * HTTPS support which is an essential feature for the security of the server since it makes tempering with the APKs sent to the server and received from the server harder.
  * Fetching and storing of metadata from a remote XML file like the one F-Droid uses at https://f-droid.org/repo/index.xml. The metadata then gets associated with APKs as soon as they are instrumented by the background APK fetching or by sending an instrumentation request to the server directly.
  * Endpoints for a list of all metadata or metadata of instrumented APKs on the server.
  * Fetching and instrumenting of remote repository APKs in the background while also leaving the instrumentation service open to receive and handle requests. This has been tested with fetching APKs from F-Droid and trying to instrument them with a 1 minute timeout. 
@@ -742,7 +769,7 @@ As you can see on the [RAML](http://raml.org/), there are other endpoints than t
 
 We think that in order to have an interesting amount of testers, we need to already have an amount of apps which are instrumented so that the user can understand how precious and easy this instrumentation could be.
 
-Therefore, we have instrumented many apps from the [FDroid Repository](https://f-droid.org/), an open source Android Application Market and we propose to the users to download them via our "Play Store Tab". All of these apps have been instrumented so they can actually be sure that these apps will respect their user policy. Keep in mind, however, that we have not implemented secure HTTPS connections and there are no hash checks or anything like that. For the server to really be used by people, features like this have to be implemented. 
+Therefore, we have instrumented many apps from the [FDroid Repository](https://f-droid.org/), an open source Android Application Market and we propose to the users to download them via our "Play Store Tab". All of these apps have been instrumented so they can actually be sure that these apps will respect their user policy.
 
 ![PlayStore](http://i.imgur.com/DZ6Tl8X.png)
 
@@ -756,7 +783,7 @@ Yes! That was an issue and we actually solved it using the simplest possible sol
 Also to reduce the computation needed on the server, we hash the app and when it is the same, the app won't be re-instrumented. (You can see it on Pontus [scheme](#concretely-what-are-we-going-to-code))
 
 ### Limitations of the server
- * One big limitation of the server is security: All interaction is done via HTTP. Therefore, you can not be sure the app you receive from the server or send to the server was not tempered with. It could additionally be implemented to have the app check the hash of the APK with the server before installing it. 
+ * It is not checked whether the APK you receive corresponds to the one sent by the server. It could additionally be implemented to have the app check the hash of the APK with the server before installing it. 
  * Overall robustness: The backend for the service has been written by Sebastian alone and has not been thoroughly tested. Therefore while the basic use cases work with the Sentinel app and the server, other cases might not be handled well by the server. To tackle this issue, more people testing and developing the server would be needed.
  * It has an limited amount of RAM like every machine, so we suppose that sending it 1000's of apps is very likely to make it crash or lead to unexpected errors.
  * Due to a fatal error while fetching F-Droid APKs that is detected by the Java Runtime Environment that happens outside of the Java Virtual Machine in native code in the frame sqlite-3.8.11.2-3fc6f6da-4c38-4319-bac9-b596f7d5cbc6-libsqlitejdbc.so+0x64427, the server however crashes after a few hours. This may be solved by investigating the error. We used OpenJDK Runtime Environment (8.0_66-b17) and sqlite-jdbc 3.8.11.2 for running the server. After implementing more thread safe access to the database, this issue seems to be resolved.
