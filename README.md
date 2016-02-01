@@ -728,7 +728,7 @@ fi
 ```
 
 ### Where is this server deployed?
-As discussed with Enrico, the server is deployed on the server he gave us on port 443: [http://lapbroyg58.informatik.tu-muenchen.de:443](http://lapbroyg58.informatik.tu-muenchen.de:443).
+As discussed with Enrico, the server is deployed on the server he gave us: [https://lapbroyg58.informatik.tu-muenchen.de](https://lapbroyg58.informatik.tu-muenchen.de).
 
 ### What are the other features of the server?
 
